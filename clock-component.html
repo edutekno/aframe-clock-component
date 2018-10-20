@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Clock! • A-Frame</title>
+    <meta name="description" content="Clock-component! • A-Frame">
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    <script>
+  AFRAME.registerComponent('clock-component', {
+  schema: {
+    scale: {type: 'number', default: 1},   
+    color: {type: 'color', default: '#AAA'}
+  },
+
+  init: function () {
+    
+
+    var data = this.data;
+    var el = this.el;
+      
+    Outer = new THREE.Object3D();
+    Inner = new THREE.Object3D();
+
+    var ClinderGeo = new THREE.CylinderGeometry( 1.7, 1.7,1 , 32 );
+    var CylinderMat = new THREE.MeshBasicMaterial( {color:0x000000} );
+    var CylinderMesh = new THREE.Mesh(ClinderGeo, CylinderMat);
+    CylinderMesh.rotateX((90* Math.PI)/180);
+    CylinderMesh.name="cylinder";
+
+
+    var TorusGeo = new THREE.TorusBufferGeometry( 2, 0.3, 16, 100 );
+    var TorusMaterial = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+    var TorusMesh = new THREE.Mesh(TorusGeo, TorusMaterial);
+    TorusMesh.name="torus";
+
+    Outer.add(CylinderMesh);
+    Inner.add(TorusMesh);
+  
+parent1 = new THREE.Object3D();
+parent2 = new THREE.Object3D();
+parent3 = new THREE.Object3D();
+
+
+
+//Hour , minutes and seconds hands
+var pivot1 = new THREE.Object3D();
+var pivot2 = new THREE.Object3D();
+var pivot3 = new THREE.Object3D();
+
+parent1.add(pivot1);
+parent2.add(pivot2);
+parent3.add(pivot3);
+
+var SecGeo = new THREE.BoxGeometry( 0.1, 1.4, 1 );
+var SecMaterial = new THREE.MeshBasicMaterial( {color: 0x009900} );
+var mesh1 = new THREE.Mesh( SecGeo, SecMaterial );
+
+var HrGeo = new THREE.BoxGeometry( 0.2, 0.5, 1 );
+var HrMaterial = new THREE.MeshBasicMaterial( {color: 0x015632} );
+var mesh2 = new THREE.Mesh( HrGeo, HrMaterial );
+
+var MinGeo = new THREE.BoxGeometry( 0.15, 1, 1 );
+var MinMaterial = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+var mesh3 = new THREE.Mesh( MinGeo, MinMaterial);
+
+mesh1.position.y = 0.9;
+mesh2.position.y = 0.7;
+mesh3.position.y = 0.8;
+
+pivot1.add( mesh1 );
+pivot2.add( mesh2 );
+pivot3.add( mesh3 );
+
+
+//Final grouping of all smaller objects.
+var parentgroup = new THREE.Object3D();
+parentgroup.add(Outer);
+parentgroup.add(Inner);
+
+parentgroup.add(parent2);
+parentgroup.add(parent3);
+parentgroup.add(parent1);
+el.setObject3D("sasd", parentgroup);
+  
+ 
+  },
+  tick : function()
+  {  
+    this.GetCurrentTime();
+    console.log("time_ "+this.sec* (15 / (Math.PI / 2)) + " sec : "+this.sec);
+    parent1.rotation.setFromVector3(new THREE.Vector3(0, 0 ,-this.sec* ((Math.PI / 2)/15)));
+    parent2.rotation.setFromVector3(new THREE.Vector3(0, 0 ,-this.hr* ((Math.PI / 2)/3)));
+    parent3.rotation.setFromVector3(new THREE.Vector3(0, 0 ,-this.min* ((Math.PI / 2)/15)));
+  },
+
+
+
+  GetCurrentTime: function(){
+   var d = new Date();
+    //var dd = d.getDate();
+    //var mm = d.getMonth()+1; //January is 0!
+    //var yyyy = d.getFullYear(); 
+   // console.log(mm + '/' + dd + '/' + yyyy);
+    //console.log("Hr:"+d.getHours()+" Min:"+d.getMinutes()+" Sec:"+d.getSeconds());
+    this.sec= d.getSeconds();
+    this.min= d.getMinutes();
+    this.hr = d.getHours();
+
+  },
+  remove: function () {
+    this.el.removeObject3D('mesh');
+  }
+});
+    </script>
+  </head>
+  <body>
+    <a-scene background="color: #ECECEC">
+     <a-entity clock-component="scale: 1;color: orange"
+            position="0 1.5 -5"></a-entity>
+    </a-scene>
+  </body>
+</html>
