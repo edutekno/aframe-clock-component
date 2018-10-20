@@ -17,24 +17,42 @@
 
     var data = this.data;
     var el = this.el;
+    this.paused= false;
       
     Outer = new THREE.Object3D();
+    Center = new THREE.Object3D();
     Inner = new THREE.Object3D();
+    Backcover= new THREE.Object3D();
 
-    var ClinderGeo = new THREE.CylinderGeometry( 1.7, 1.7,1 , 32 );
-    var CylinderMat = new THREE.MeshBasicMaterial( {color:0x000000} );
+    var texture = new THREE.TextureLoader().load( 'dial2.jpg' );
+    var ClinderGeo = new THREE.CylinderGeometry( 1.75, 1.75,0.1 , 32 );
+    var CylinderMat = new THREE.MeshBasicMaterial( {map:texture} );
     var CylinderMesh = new THREE.Mesh(ClinderGeo, CylinderMat);
     CylinderMesh.rotateX((90* Math.PI)/180);
+     CylinderMesh.rotateY((90* Math.PI)/180);
     CylinderMesh.name="cylinder";
+    
 
+    var ClinderGeo2 = new THREE.CylinderGeometry( 2, 2,0.2 , 32 );
+    var CylinderMat2 = new THREE.MeshBasicMaterial( {color: 0x000000 } );
+    var CylinderMesh2 = new THREE.Mesh(ClinderGeo2, CylinderMat2);
+    CylinderMesh2.rotateX((90* Math.PI)/180);
+    CylinderMesh2.position.z-=0.15;
 
-    var TorusGeo = new THREE.TorusBufferGeometry( 2, 0.3, 16, 100 );
-    var TorusMaterial = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+    var TorusGeo = new THREE.TorusBufferGeometry( 2, 0.2, 16, 100 );
+    var TorusMaterial = new THREE.MeshPhongMaterial( { color: 0x000000 } );
     var TorusMesh = new THREE.Mesh(TorusGeo, TorusMaterial);
     TorusMesh.name="torus";
 
+    var CenterGeo = new THREE.CylinderGeometry( 0.15, 0.15, 0.4 , 32 );
+    var CenterMat = new THREE.MeshPhongMaterial( { color: 0x000000 } );
+    var CenterMesh = new THREE.Mesh(CenterGeo, CenterMat);
+    CenterMesh.rotateX((90* Math.PI)/180);
+   
     Outer.add(CylinderMesh);
     Inner.add(TorusMesh);
+    Center.add(CenterMesh);
+    Backcover.add(CylinderMesh2);
   
 parent1 = new THREE.Object3D();
 parent2 = new THREE.Object3D();
@@ -51,20 +69,20 @@ parent1.add(pivot1);
 parent2.add(pivot2);
 parent3.add(pivot3);
 
-var SecGeo = new THREE.BoxGeometry( 0.1, 1.4, 1 );
-var SecMaterial = new THREE.MeshBasicMaterial( {color: 0x009900} );
+var SecGeo = new THREE.BoxGeometry( 0.08, 1.4, 0.3 );
+var SecMaterial = new THREE.MeshBasicMaterial( {color: 0x990000} );
 var mesh1 = new THREE.Mesh( SecGeo, SecMaterial );
 
-var HrGeo = new THREE.BoxGeometry( 0.2, 0.5, 1 );
-var HrMaterial = new THREE.MeshBasicMaterial( {color: 0x015632} );
+var HrGeo = new THREE.BoxGeometry( 0.18, 0.6, 0.3 );
+var HrMaterial = new THREE.MeshBasicMaterial( {color: 0x000000} );
 var mesh2 = new THREE.Mesh( HrGeo, HrMaterial );
 
-var MinGeo = new THREE.BoxGeometry( 0.15, 1, 1 );
-var MinMaterial = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+var MinGeo = new THREE.BoxGeometry( 0.12, 0.95, 0.3 );
+var MinMaterial = new THREE.MeshBasicMaterial( {color: 0x000000} );
 var mesh3 = new THREE.Mesh( MinGeo, MinMaterial);
 
 mesh1.position.y = 0.9;
-mesh2.position.y = 0.7;
+mesh2.position.y = 0.6;
 mesh3.position.y = 0.8;
 
 pivot1.add( mesh1 );
@@ -75,26 +93,36 @@ pivot3.add( mesh3 );
 //Final grouping of all smaller objects.
 var parentgroup = new THREE.Object3D();
 parentgroup.add(Outer);
+parentgroup.add(Backcover);
 parentgroup.add(Inner);
 
 parentgroup.add(parent2);
 parentgroup.add(parent3);
 parentgroup.add(parent1);
-el.setObject3D("sasd", parentgroup);
+parentgroup.add(Center);
+
+el.setObject3D("Clock", parentgroup);
   
  
   },
   tick : function()
-  {  
-    this.GetCurrentTime();
+  { 
+    if(!this.paused)
+    {this.GetCurrentTime();
     console.log("time_ "+this.sec* (15 / (Math.PI / 2)) + " sec : "+this.sec);
+    var hrs = this.hr* ((Math.PI / 2)/3);
+    var mins= this.min* ((Math.PI / 2)/15);
     parent1.rotation.setFromVector3(new THREE.Vector3(0, 0 ,-this.sec* ((Math.PI / 2)/15)));
-    parent2.rotation.setFromVector3(new THREE.Vector3(0, 0 ,-this.hr* ((Math.PI / 2)/3)));
-    parent3.rotation.setFromVector3(new THREE.Vector3(0, 0 ,-this.min* ((Math.PI / 2)/15)));
+    parent2.rotation.setFromVector3(new THREE.Vector3(0, 0 ,-hrs-((((Math.PI / 2)/3)*this.min)/60)));
+    parent3.rotation.setFromVector3(new THREE.Vector3(0, 0 ,-mins-((((Math.PI / 2)/15)*this.sec)/60)));
+    }
+    
+  }, pause: function () {
+      this.paused=true;
   },
-
-
-
+  play: function () {
+    this.paused=false;
+  },
   GetCurrentTime: function(){
    var d = new Date();
     //var dd = d.getDate();
@@ -105,11 +133,10 @@ el.setObject3D("sasd", parentgroup);
     this.sec= d.getSeconds();
     this.min= d.getMinutes();
     this.hr = d.getHours();
-
   },
   remove: function () {
-    this.el.removeObject3D('mesh');
-  }
+    this.el.removeObject3D('Clock');
+  } 
 });
     </script>
   </head>
