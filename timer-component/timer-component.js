@@ -174,8 +174,6 @@ console.log(el.object3D);
     
   },
   remove: function () {
-    //var af= this.el; 
-    this.el.removeObject3D('ClockMesh');
      console.log("removing");//removeObject3D('ClockMesh');
   },
     update: function (oldData) {

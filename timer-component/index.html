@@ -18,9 +18,10 @@
         clock.play();
      }
     function RemoveTimer(){
-        console.log("start");
+        console.log("removing");
         var clock=document.getElementById("timer");
-        clock.remove();
+       
+        document.querySelector("a-scene").removeChild(clock);
      }
      </script>
        </head>
