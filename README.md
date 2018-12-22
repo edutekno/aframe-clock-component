@@ -12,5 +12,5 @@
  ### Features - 
  - [X] Analog Clock
  - [X] Digital Clock
- - [ ] Countdown Timer
+ - [X] Countdown Timer
  
