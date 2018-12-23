@@ -5,7 +5,11 @@
     <title>CountDownTimer! • A-Frame</title>
     <meta name="description" content="CountDownTimer! • A-Frame">
     <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    
     <script type="text/javascript" src="timer-component.js"></script>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
      <script>
      function PauseTimer(){
         console.log("start");
@@ -19,8 +23,7 @@
      }
     function RemoveTimer(){
         console.log("removing");
-        var clock=document.getElementById("timer");
-       
+        var clock=document.getElementById("timer");       
         document.querySelector("a-scene").removeChild(clock);
      }
      </script>
@@ -30,8 +33,8 @@
      <a-entity id="timer" timer-component=" timerTime:5;DigitsColor:red"
             position="0 1.5 -5"></a-entity>
     </a-scene>
-   <button onclick="PauseTimer()" style="position: absolute;top: 70px;right: 15px;">pause</button>
-   <button onclick="StartTimer()" style="position: absolute;top: 100px;right: 15px;">start</button>
-   <button onclick="RemoveTimer()" style="position: absolute;top: 130px;right: 15px;">Remove</button>
+   <button onclick="PauseTimer()" style="position: absolute;top:80%;left :20% ;" type="button" class="btn btn-warning">Pause</button>
+   <button onclick="StartTimer()" style="position: absolute;top:80%;left: 50%;" type="button" class="btn btn-success">Start</button>
+   <button onclick="RemoveTimer()" style="position: absolute;top:80%;left: 80%;" type="button" class="btn btn-danger">Remove</button>
   </body>
 </html>
